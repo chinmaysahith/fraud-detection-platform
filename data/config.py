@@ -33,3 +33,9 @@ FRAUD_LOCATIONS = ["Tokyo", "Russia", "Nigeria", "North Korea", "Anonymous"]
 FRAUD_MERCHANTS = ["construction", "weapons", "unknown_store", "offshore"]
 FRAUD_DEVICES = ["laptop", "unknown_device"]
 FRAUD_TIMES = ["midnight", "3am", "4am"]
+
+# Kafka Configuration
+KAFKA_BROKER = "localhost:9092"
+KAFKA_TOPIC = "txn-stream"
+KAFKA_GROUP_ID = "fraud-detector-group"
+KAFKA_AUTO_OFFSET_RESET = "earliest"

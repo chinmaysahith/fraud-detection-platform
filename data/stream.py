@@ -9,12 +9,15 @@ import random
 
 import config
 from generator import User, TransactionGenerator
+from kafka_producer import FraudKafkaProducer
 
 def main() -> None:
     """
     Main function to run the infinite transaction stream.
     """
     users = [User(f"user_{str(i).zfill(3)}") for i in range(1, config.NUM_USERS + 1)]
+
+    producer = FraudKafkaProducer()
 
     print(f"🚀 Stream started | Users: {config.NUM_USERS} | Speed: {config.TRANSACTIONS_PER_SECOND} txns/sec")
     print("-" * 50)
@@ -35,14 +38,19 @@ def main() -> None:
             else:
                 txn = generator.generate_normal()
 
+            # Send to Kafka
+            kafka_success = producer.send_transaction(txn)
+            kafka_status = "✅" if kafka_success else "❌"
+
             if txn["is_fraud"]:
-                print(f"[FRAUD⚠️] txn_id: {txn['txn_id'][:6]} | user: {txn['user_id']} | amount: ${txn['amount']:.2f} | location: {txn['location']}")
+                print(f"[FRAUD⚠️] txn_id: {txn['txn_id'][:6]} | user: {txn['user_id']} | amount: ${txn['amount']:.2f} | location: {txn['location']:<12} | kafka: {kafka_status}")
             else:
-                print(f"[NORMAL]  txn_id: {txn['txn_id'][:6]} | user: {txn['user_id']} | amount: ${txn['amount']:.2f} | location: {txn['location']}")
+                print(f"[NORMAL]  txn_id: {txn['txn_id'][:6]} | user: {txn['user_id']} | amount: ${txn['amount']:.2f} | location: {txn['location']:<12} | kafka: {kafka_status}")
 
             time.sleep(sleep_time)
 
     except KeyboardInterrupt:
+        producer.close()
         print("\n⏹️ Stream stopped gracefully.")
         sys.exit(0)
 
