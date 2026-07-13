@@ -107,3 +107,40 @@ python model/inference_consumer.py
 ```
 
 Watch the dashboard update every 5 seconds in real time.
+
+## Phase 6 — MLOps
+
+### Start all services
+```bash
+docker-compose up -d
+```
+
+### Install MLOps dependencies
+```bash
+pip install evidently mlflow
+```
+
+### Train model with MLflow tracking
+```bash
+python model/trainer.py
+```
+
+### View MLflow experiments
+- URL: http://localhost:5000
+- See all model versions, parameters, metrics
+
+### View Airflow DAGs
+- URL: http://localhost:8080
+- Username: admin / Password: admin
+- Find DAG: fraud_model_retraining
+- Enable and trigger manually to test
+
+### Run pipeline with drift detection
+```bash
+# Terminal 1
+python data/stream.py
+
+# Terminal 2
+python model/inference_consumer.py
+# Watch for drift check every 500 transactions
+```

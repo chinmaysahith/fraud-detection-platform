@@ -1,0 +1,7 @@
+evidently
+mlflow
+apache-airflow
+scikit-learn
+pandas
+numpy
+joblib
