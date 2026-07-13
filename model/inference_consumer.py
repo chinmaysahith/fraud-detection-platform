@@ -13,6 +13,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from data import config
 from model.predictor import FraudPredictor
+from database.db import init_db, get_connection
+from database.repository import TransactionRepository
 
 def main():
     """
@@ -23,6 +25,17 @@ def main():
     except FileNotFoundError as e:
         print(f"Error: {e}")
         sys.exit(1)
+
+    # Initialize DB and Repository
+    print("Initializing database...")
+    try:
+        init_db()
+        conn = get_connection()
+        repository = TransactionRepository(conn)
+    except Exception as e:
+        print(f"Database connection error on startup: {e}")
+        repository = None
+        conn = None
 
     print(f"Connecting to Kafka broker at {config.KAFKA_BROKER}...")
 
@@ -55,12 +68,35 @@ def main():
             else:
                 label = "[FRAUD 🚨]"
 
-            print(f"{label} txn_id: {txn_id} | user: {user} | amount: ${amount:.2f} | score: {score:.2f}")
+            db_status_str = "✅"
+            if repository:
+                try:
+                    # Save transaction to DB
+                    save_txn_success = repository.save_transaction(scored_txn)
+
+                    # Save fraud alert if score >= 0.5
+                    save_alert_success = True
+                    if score >= 0.5:
+                        save_alert_success = repository.save_fraud_alert(scored_txn)
+
+                    if not save_txn_success or (score >= 0.5 and not save_alert_success):
+                        db_status_str = "❌"
+                except Exception as e:
+                    print(f"Error saving to DB: {e}")
+                    db_status_str = "❌"
+            else:
+                db_status_str = "❌"
+
+            print(f"{label} txn_id: {txn_id} | user: {user} | amount: ${amount:.2f} | score: {score:.2f} | db: {db_status_str}")
 
     except KeyboardInterrupt:
         print("\nStopping inference consumer...")
     except Exception as e:
         print(f"\nKafka connection error: {e}")
+    finally:
+        if 'conn' in locals() and conn:
+            from database.db import close_connection
+            close_connection(conn)
 
 if __name__ == "__main__":
     main()

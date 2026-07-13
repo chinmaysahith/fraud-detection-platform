@@ -44,6 +44,25 @@ services:
       timeout: 5s
       retries: 5
 
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_DB: fraud_detection
+      POSTGRES_USER: fraud_user
+      POSTGRES_PASSWORD: fraud_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - fraud-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fraud_user -d fraud_detection"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 networks:
   fraud-network:
     name: fraud-network
@@ -53,3 +72,4 @@ volumes:
   zookeeper_data:
   zookeeper_log:
   kafka_data:
+  postgres_data:
