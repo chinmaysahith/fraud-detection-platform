@@ -30,7 +30,7 @@ class FraudKafkaConsumer:
                 group_id=config.KAFKA_GROUP_ID,
                 auto_offset_reset=config.KAFKA_AUTO_OFFSET_RESET,
                 value_deserializer=lambda x: json.loads(x.decode('utf-8')),
-                consumer_timeout_ms=5000  # 5 seconds timeout
+                consumer_timeout_ms=15000  # 15 seconds timeout
             )
             logger.info(f"Connected to Kafka broker at {config.KAFKA_BROKER} for topic '{config.KAFKA_TOPIC}'")
         except KafkaError as e:
