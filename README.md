@@ -26,3 +26,20 @@ python data/kafka_consumer.py
 ```bash
 docker-compose down
 ```
+
+## Phase 3 — ML Model
+
+### Train the model first
+```bash
+python model/trainer.py
+```
+
+### Start the stream (Terminal 1)
+```bash
+python data/stream.py
+```
+
+### Start inference consumer (Terminal 2)
+```bash
+python model/inference_consumer.py
+```
