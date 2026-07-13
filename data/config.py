@@ -56,3 +56,16 @@ POSTGRES_DB = "fraud_detection"
 POSTGRES_USER = "fraud_user"
 POSTGRES_PASSWORD = "fraud_pass"
 POSTGRES_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
+
+# MLflow Configuration
+MLFLOW_TRACKING_URI = "http://localhost:5000"
+MLFLOW_EXPERIMENT_NAME = "fraud-detection"
+MODEL_NAME = "isolation-forest-fraud"
+
+# Drift Detection Configuration
+DRIFT_CHECK_INTERVAL = 500      # check every 500 transactions
+DRIFT_THRESHOLD = 0.3           # retrain if drift score > 0.3
+REFERENCE_DATA_PATH = "mlops/reference_data.pkl"
+
+# Retraining Configuration
+RETRAIN_SAMPLES = 10000

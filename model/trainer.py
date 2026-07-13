@@ -8,6 +8,8 @@ import sys
 from typing import List
 
 import joblib
+import mlflow
+import mlflow.sklearn
 from sklearn.ensemble import IsolationForest
 
 # Add the root directory to sys.path to import data modules
@@ -49,14 +51,40 @@ class ModelTrainer:
         # Generate data
         X = self.generate_training_data(n_samples)
 
-        # Initialize and train model
+        # Initialize model
         model = IsolationForest(
             contamination=config.CONTAMINATION,
             random_state=42
         )
-        model.fit(X)
 
-        # Save model
+        try:
+            mlflow.set_tracking_uri(config.MLFLOW_TRACKING_URI)
+            mlflow.set_experiment(config.MLFLOW_EXPERIMENT_NAME)
+
+            with mlflow.start_run(run_name="isolation-forest-training"):
+                model.fit(X)
+
+                # Log parameters
+                mlflow.log_param("n_samples", n_samples)
+                mlflow.log_param("contamination", config.CONTAMINATION)
+                mlflow.log_param("random_state", 42)
+
+                # Log metrics
+                mlflow.log_metric("training_samples", n_samples)
+                mlflow.log_metric("n_features", len(config.FEATURE_COLUMNS))
+
+                # Log model to registry
+                mlflow.sklearn.log_model(
+                    model,
+                    "isolation-forest",
+                    registered_model_name=config.MODEL_NAME
+                )
+                print(f"Model logged to MLflow: {config.MLFLOW_EXPERIMENT_NAME}")
+        except Exception as e:
+            print(f"MLflow tracking failed, saving locally only. Error: {e}")
+            model.fit(X)
+
+        # Save model locally
         os.makedirs(os.path.dirname(config.MODEL_PATH), exist_ok=True)
         joblib.dump(model, config.MODEL_PATH)
 
