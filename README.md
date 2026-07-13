@@ -81,3 +81,29 @@ python model/inference_consumer.py
 docker exec -it postgres psql -U fraud_user -d fraud_detection -c "SELECT COUNT(*) FROM transactions;"
 docker exec -it postgres psql -U fraud_user -d fraud_detection -c "SELECT * FROM fraud_alerts ORDER BY created_at DESC LIMIT 5;"
 ```
+
+## Phase 5 — Grafana Dashboard
+
+### Start all services
+```bash
+docker-compose up -d
+```
+
+### Open Grafana
+- URL: http://localhost:3000
+- Username: admin
+- Password: admin
+
+### Navigate to dashboard
+- Left sidebar → Dashboards → Fraud Detection → Fraud Detection Platform
+
+### Run the pipeline
+```bash
+# Terminal 1
+python data/stream.py
+
+# Terminal 2
+python model/inference_consumer.py
+```
+
+Watch the dashboard update every 5 seconds in real time.
