@@ -48,3 +48,11 @@ CONTAMINATION = 0.05  # expected 5% fraud in real data
 
 # Feature columns used for training and inference
 FEATURE_COLUMNS = ["amount", "hour", "is_weekend", "location_risk", "merchant_risk", "device_risk"]
+
+# PostgreSQL Configuration
+POSTGRES_HOST = "localhost"
+POSTGRES_PORT = 5432
+POSTGRES_DB = "fraud_detection"
+POSTGRES_USER = "fraud_user"
+POSTGRES_PASSWORD = "fraud_pass"
+POSTGRES_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
