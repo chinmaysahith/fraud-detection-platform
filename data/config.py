@@ -39,3 +39,12 @@ KAFKA_BROKER = "localhost:9092"
 KAFKA_TOPIC = "txn-stream"
 KAFKA_GROUP_ID = "fraud-detector-group"
 KAFKA_AUTO_OFFSET_RESET = "earliest"
+
+# Model Configuration
+FRAUD_THRESHOLD = 0.8
+TRAINING_SAMPLES = 10000
+MODEL_PATH = "model/isolation_forest.pkl"
+CONTAMINATION = 0.05  # expected 5% fraud in real data
+
+# Feature columns used for training and inference
+FEATURE_COLUMNS = ["amount", "hour", "is_weekend", "location_risk", "merchant_risk", "device_risk"]
