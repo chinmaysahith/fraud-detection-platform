@@ -69,3 +69,12 @@ REFERENCE_DATA_PATH = "mlops/reference_data.pkl"
 
 # Retraining Configuration
 RETRAIN_SAMPLES = 10000
+
+# API Configuration
+API_HOST = "0.0.0.0"
+API_PORT = 8000
+API_KEY = "fraud-api-key-x7k9m2p4"
+API_KEY_NAME = "X-API-Key"
+API_TITLE = "Fraud Detection API"
+API_DESCRIPTION = "Real-time fraud detection platform API"
+API_VERSION = "1.0.0"
