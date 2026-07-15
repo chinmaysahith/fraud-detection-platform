@@ -136,6 +136,29 @@ services:
       timeout: 10s
       retries: 5
 
+  fraud-api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    container_name: fraud-api
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONPATH=/app
+    volumes:
+      - .:/app
+      - ./model/isolation_forest.pkl:/app/model/isolation_forest.pkl
+    networks:
+      - fraud-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 networks:
   fraud-network:
     name: fraud-network

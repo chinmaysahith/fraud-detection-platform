@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+pydantic
+kafka-python
+psycopg2-binary
+scikit-learn
+joblib
+numpy

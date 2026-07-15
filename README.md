@@ -144,3 +144,51 @@ python data/stream.py
 python model/inference_consumer.py
 # Watch for drift check every 500 transactions
 ```
+
+## Phase 7 — FastAPI
+
+### Install dependencies
+```bash
+pip install fastapi uvicorn pydantic
+```
+
+### Run API locally
+```bash
+python -m uvicorn api.main:app --reload --port 8000
+```
+
+### Interactive API docs
+- URL: http://localhost:8000/docs
+- Click any endpoint → Try it out → Add API key → Execute
+
+### API Key
+Add to every request header:
+```
+X-API-Key: fraud-api-key-x7k9m2p4
+```
+
+### Example predict request
+```bash
+curl -X POST http://localhost:8000/predict \
+  -H "X-API-Key: fraud-api-key-x7k9m2p4" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "user_id": "user_042",
+    "amount": 12000,
+    "location": "Nigeria",
+    "merchant": "weapons",
+    "device": "laptop",
+    "time_of_day": "midnight",
+    "day_of_week": "Monday"
+  }'
+```
+
+### Expected response
+```json
+{
+  "txn_id": "abc-123",
+  "fraud_score": 0.94,
+  "label": "FRAUD",
+  "is_fraud_predicted": true
+}
+```
