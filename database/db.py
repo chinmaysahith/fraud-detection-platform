@@ -15,13 +15,18 @@ def get_connection() -> connection:
     Returns a psycopg2 connection using configuration constants.
     Raises an error if the connection fails.
     """
+    # If running on Render with localhost configured as database host, fail fast immediately to avoid delays
+    if os.environ.get("RENDER") == "true" and config.POSTGRES_HOST == "localhost":
+        raise Exception("Database host is localhost on Render. Skipping connection.")
+
     try:
         conn = psycopg2.connect(
             host=config.POSTGRES_HOST,
             port=config.POSTGRES_PORT,
             dbname=config.POSTGRES_DB,
             user=config.POSTGRES_USER,
-            password=config.POSTGRES_PASSWORD
+            password=config.POSTGRES_PASSWORD,
+            connect_timeout=2
         )
         return conn
     except Exception as e:
