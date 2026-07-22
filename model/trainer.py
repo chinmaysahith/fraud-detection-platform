@@ -57,31 +57,48 @@ class ModelTrainer:
             random_state=42
         )
 
+        # Check if MLflow is reachable before starting run
+        import socket
+        mlflow_active = False
         try:
-            mlflow.set_tracking_uri(config.MLFLOW_TRACKING_URI)
-            mlflow.set_experiment(config.MLFLOW_EXPERIMENT_NAME)
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                s.settimeout(0.2)
+                uri = config.MLFLOW_TRACKING_URI.replace("http://", "").replace("https://", "")
+                host, port = uri.split(":")
+                s.connect((host, int(port)))
+                mlflow_active = True
+        except Exception:
+            mlflow_active = False
 
-            with mlflow.start_run(run_name="isolation-forest-training"):
+        if mlflow_active:
+            try:
+                mlflow.set_tracking_uri(config.MLFLOW_TRACKING_URI)
+                mlflow.set_experiment(config.MLFLOW_EXPERIMENT_NAME)
+
+                with mlflow.start_run(run_name="isolation-forest-training"):
+                    model.fit(X)
+
+                    # Log parameters
+                    mlflow.log_param("n_samples", n_samples)
+                    mlflow.log_param("contamination", config.CONTAMINATION)
+                    mlflow.log_param("random_state", 42)
+
+                    # Log metrics
+                    mlflow.log_metric("training_samples", n_samples)
+                    mlflow.log_metric("n_features", len(config.FEATURE_COLUMNS))
+
+                    # Log model to registry
+                    mlflow.sklearn.log_model(
+                        model,
+                        "isolation-forest",
+                        registered_model_name=config.MODEL_NAME
+                    )
+                    print(f"Model logged to MLflow: {config.MLFLOW_EXPERIMENT_NAME}")
+            except Exception as e:
+                print(f"MLflow tracking failed, saving locally only. Error: {e}")
                 model.fit(X)
-
-                # Log parameters
-                mlflow.log_param("n_samples", n_samples)
-                mlflow.log_param("contamination", config.CONTAMINATION)
-                mlflow.log_param("random_state", 42)
-
-                # Log metrics
-                mlflow.log_metric("training_samples", n_samples)
-                mlflow.log_metric("n_features", len(config.FEATURE_COLUMNS))
-
-                # Log model to registry
-                mlflow.sklearn.log_model(
-                    model,
-                    "isolation-forest",
-                    registered_model_name=config.MODEL_NAME
-                )
-                print(f"Model logged to MLflow: {config.MLFLOW_EXPERIMENT_NAME}")
-        except Exception as e:
-            print(f"MLflow tracking failed, saving locally only. Error: {e}")
+        else:
+            print("MLflow server offline. Training model locally (fast mode)...")
             model.fit(X)
 
         # Save model locally

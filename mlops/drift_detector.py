@@ -9,8 +9,8 @@ from datetime import datetime
 from typing import List, Dict, Any
 
 import pandas as pd
-from evidently.report import Report
-from evidently.metric_preset import DataDriftPreset
+from evidently.legacy.report.report import Report
+from evidently.legacy.metric_preset import DataDriftPreset
 
 # Add the root directory to sys.path to import data modules
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -82,7 +82,7 @@ class DriftDetector:
         result = report.as_dict()
         drift_score = result["metrics"][0]["result"]["drift_share"]
         drifted_features = [
-            feature for feature, details in result["metrics"][0]["result"]["drift_by_columns"].items()
+            feature for feature, details in result["metrics"][1]["result"]["drift_by_columns"].items()
             if details["drift_detected"]
         ]
 

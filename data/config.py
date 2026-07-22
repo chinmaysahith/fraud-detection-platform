@@ -15,11 +15,11 @@ SUBTLE_FRAUD_PROBABILITY = 0.01    # 1%
 NORMAL_PROBABILITY = 0.95          # 95%
 
 # Normal user behavior ranges
-NORMAL_AMOUNT_MIN = 100
+NORMAL_AMOUNT_MIN = 1
 NORMAL_AMOUNT_MAX = 1000
-NORMAL_LOCATIONS = ["New York", "Brooklyn", "Queens", "Bronx", "Manhattan"]
-NORMAL_MERCHANTS = ["grocery", "salon", "clothing", "restaurant", "pharmacy"]
-NORMAL_DEVICES = ["phone"]
+NORMAL_LOCATIONS = ["USA", "United States", "UK", "United Kingdom", "Germany", "Japan", "UAE", "New York", "Brooklyn", "Queens", "Manhattan"]
+NORMAL_MERCHANTS = ["grocery", "salon", "clothing", "restaurant", "pharmacy", "electronics"]
+NORMAL_DEVICES = ["phone", "mobile"]
 NORMAL_TIMES = ["morning", "afternoon", "evening"]
 NORMAL_FREQUENCY_MIN = 5
 NORMAL_FREQUENCY_MAX = 10
@@ -78,3 +78,50 @@ API_KEY_NAME = "X-API-Key"
 API_TITLE = "Fraud Detection API"
 API_DESCRIPTION = "Real-time fraud detection platform API"
 API_VERSION = "1.0.0"
+
+# Feature Risk Maps
+LOCATION_RISK_MAP = {
+    "USA": 0.1,
+    "United States": 0.1,
+    "UK": 0.1,
+    "United Kingdom": 0.1,
+    "Germany": 0.1,
+    "Japan": 0.1,
+    "UAE": 0.2,
+    "New York": 0.1,
+    "Brooklyn": 0.1,
+    "Queens": 0.1,
+    "Bronx": 0.1,
+    "Manhattan": 0.1,
+    "Brazil": 0.5,
+    "Tokyo": 0.3,
+    "Russia": 0.9,
+    "Nigeria": 0.95,
+    "North Korea": 0.99,
+    "Anonymous": 0.99
+}
+
+MERCHANT_RISK_MAP = {
+    "grocery": 0.1,
+    "salon": 0.1,
+    "clothing": 0.1,
+    "restaurant": 0.1,
+    "pharmacy": 0.1,
+    "electronics": 0.2,
+    "luxury_watch": 0.7,
+    "casino": 0.85,
+    "crypto_exchange": 0.9,
+    "weapons": 0.99,
+    "construction": 0.6,
+    "unknown_store": 0.9,
+    "offshore": 0.95
+}
+
+DEVICE_RISK_MAP = {
+    "phone": 0.1,
+    "mobile": 0.1,
+    "tablet": 0.2,
+    "POS_terminal": 0.2,
+    "laptop": 0.3,
+    "unknown_device": 0.95
+}

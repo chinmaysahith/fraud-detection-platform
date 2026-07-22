@@ -8,7 +8,11 @@ import uuid
 from datetime import datetime
 from typing import Dict, Any
 
-import config
+try:
+    import config
+except ModuleNotFoundError:
+    from data import config
+
 
 class User:
     """
@@ -29,7 +33,7 @@ class User:
 
         self.preferred_merchants = random.sample(config.NORMAL_MERCHANTS, 3)
         self.preferred_times = random.sample(config.NORMAL_TIMES, 2)
-        self.device = "phone"  # always phone for normal users
+        self.device = random.choice(config.NORMAL_DEVICES)
         self.daily_frequency = random.randint(config.NORMAL_FREQUENCY_MIN, config.NORMAL_FREQUENCY_MAX)
         self.payday_multiplier = random.uniform(1.5, 2.5)
 

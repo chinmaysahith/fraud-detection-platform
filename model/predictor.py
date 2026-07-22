@@ -42,16 +42,11 @@ class FraudPredictor:
         """
         features = extract_features(txn)
 
-        # Isolation Forest returns negative scores
-        # Convert to 0.0-1.0 probability:
-        raw_score = self.model.score_samples([features])[0]
+        # Isolation Forest decision_function returns > 0 for inliers (normal) and < 0 for outliers (anomalies)
+        dec_func = self.model.decision_function([features])[0]
 
-        # raw_score is negative: more negative = more anomalous
-        # normalize to 0-1 where 1 = most anomalous
-        fraud_score = 1 - (raw_score - self.min_score) / (self.max_score - self.min_score)
-
-        # Use clip to ensure range stays 0.0-1.0
-        fraud_score = float(np.clip(fraud_score, 0.0, 1.0))
+        # Convert to 0.0 - 1.0 anomaly risk score (where 1.0 is highest risk)
+        fraud_score = float(np.clip(0.5 - (dec_func / 0.25), 0.0, 1.0))
 
         # Create a copy to enrich
         enriched_txn = txn.copy()
