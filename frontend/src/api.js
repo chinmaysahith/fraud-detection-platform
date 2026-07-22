@@ -1,6 +1,4 @@
-const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-  ? 'http://localhost:8000' 
-  : window.location.origin;
+const API_BASE_URL = 'https://fraud-detection-platform-lk2f.onrender.com';
 const API_KEY = 'fraud-api-key-x7k9m2p4';
 
 export async function predictTransaction(transactionData) {

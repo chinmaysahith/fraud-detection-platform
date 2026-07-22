@@ -9,13 +9,21 @@ import os
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from data.config import API_TITLE, API_DESCRIPTION, API_VERSION
+from data import config
+if not os.path.exists(config.MODEL_PATH):
+    print("Model file not found. Running self-healing training on startup...")
+    try:
+        from model.trainer import ModelTrainer
+        ModelTrainer().train()
+    except Exception as e:
+        print(f"Startup training failed: {e}")
+
 from api.routes import predict, transactions, alerts, health, mlops
 
 app = FastAPI(
-    title=API_TITLE,
-    description=API_DESCRIPTION,
-    version=API_VERSION
+    title=config.API_TITLE,
+    description=config.API_DESCRIPTION,
+    version=config.API_VERSION
 )
 
 # Add CORS middleware
@@ -50,13 +58,12 @@ if os.path.exists(frontend_dist_path):
             raise HTTPException(status_code=404)
         index_file = os.path.join(frontend_dist_path, "index.html")
         return FileResponse(index_file)
-else:
-    @app.get("/")
-    def root():
-        """Root endpoint to return API info."""
-        return {
-            "name": API_TITLE,
-            "version": API_VERSION,
-            "docs": "/docs",
-            "health": "/health"
-        }
+@app.get("/")
+def root():
+    """Root endpoint to return API info."""
+    return {
+        "name": config.API_TITLE,
+        "version": config.API_VERSION,
+        "docs": "/docs",
+        "health": "/health"
+    }
